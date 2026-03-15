@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getTourBySlug, TOURS } from '@/app/data/tours'
+import { supabase } from '@/lib/supabase'
 import { getSiteConfig } from '@/lib/site-config'
 import BookingForm from '@/app/components/BookingForm'
 import Navbar from '@/app/components/Navbar'
@@ -10,13 +10,43 @@ import TourTabs from './TourTabs'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  return []
+async function getTourBySlug(slug: string) {
+  try {
+    const { data, error } = await supabase
+      .from('tours')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    if (error || !data) return null
+    return {
+      id: data.id,
+      slug: data.slug,
+      title: data.title,
+      destination: data.destination,
+      country: data.country,
+      price: data.price,
+      duration: data.duration,
+      groupSize: data.group_size || 'Max 12',
+      difficulty: data.difficulty || 'Easy',
+      image: data.image || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+      gallery: data.gallery || [],
+      description: data.description || '',
+      overview: data.overview || '',
+      highlights: data.highlights || [],
+      whatsapp_message: data.whatsapp_message || `Hi! I'm interested in the ${data.title} tour.`,
+      inclusions: data.inclusions || [],
+      exclusions: data.exclusions || [],
+      policy: data.policy || { cancellation: '', payment: '', childPolicy: '', healthRequirements: '' },
+      itinerary: data.itinerary || [],
+    }
+  } catch {
+    return null
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const tour = getTourBySlug(slug)
+  const tour = await getTourBySlug(slug)
   return {
     title: tour ? `${tour.title} — LuxeVoyage` : 'Tour Not Found',
     description: tour?.description,
@@ -25,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function TourDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const tour = getTourBySlug(slug)
+  const tour = await getTourBySlug(slug)
   if (!tour) notFound()
 
   const config = await getSiteConfig()
@@ -102,7 +132,7 @@ export default async function TourDetailPage({ params }: { params: Promise<{ slu
       {/* ─── Gallery strip ─── */}
       <div className="max-w-7xl mx-auto px-6 -mt-2 mb-8">
         <div className="grid grid-cols-3 gap-2 rounded-2xl overflow-hidden h-28">
-          {tour.gallery.map((src, i) => (
+          {tour.gallery.map((src: string, i: number) => (
             <div key={i} className="relative overflow-hidden group cursor-pointer">
               <Image
                 src={src}
@@ -124,7 +154,7 @@ export default async function TourDetailPage({ params }: { params: Promise<{ slu
           <div>
             {/* Highlights pills */}
             <div className="flex flex-wrap gap-2 mb-10">
-              {tour.highlights.map((h) => (
+              {tour.highlights.map((h: string) => (
                 <span
                   key={h}
                   className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold"
@@ -188,4 +218,3 @@ export default async function TourDetailPage({ params }: { params: Promise<{ slu
     </div>
   )
 }
-
