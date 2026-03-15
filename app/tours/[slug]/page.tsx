@@ -218,3 +218,4 @@ export default async function TourDetailPage({ params }: { params: Promise<{ slu
     </div>
   )
 }
+
