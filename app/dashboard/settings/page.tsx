@@ -24,7 +24,7 @@ const DEFAULTS: Settings = {
   whatsappNumber: '15551234567',
   email: 'hello@luxevoyage.com',
   phone: '+1 555 123 4567',
-  heroTitle: 'The Art of Extraordinary Travel',
+  heroTitle: 'The Art of Extraordinary Travell',
   heroSubtitle: 'Immersive journeys designed for those who dare to claim and live the extraordinary.',
   heroBadge: 'The Private Agency',
   primaryCTA: 'Explore Expeditions',
