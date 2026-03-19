@@ -1,12 +1,11 @@
 import LoginForm from './LoginForm'
 
-export default async function LoginPage({
+export default function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string }>
+  searchParams?: { from?: string }
 }) {
-  const params = await searchParams
-  const redirectTo = params.from || '/dashboard'
+  const redirectTo = searchParams?.from || '/dashboard'
 
   return <LoginForm redirectTo={redirectTo} />
 }
