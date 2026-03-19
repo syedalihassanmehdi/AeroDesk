@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const NAV = [
   {
@@ -72,8 +72,22 @@ const NAV = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } finally {
+      router.push('/login')
+      router.refresh()
+      setLoggingOut(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen" style={{ background: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>
@@ -195,8 +209,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="hidden md:block text-right">
               <p className="text-white text-xs font-semibold">Admin</p>
-              <p className="text-white/30 text-[10px]">Agency Owner</p>
+              <p className="text-white/30 text-[10px]">Private Dashboard</p>
             </div>
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-white/70 transition hover:border-[#C5A059]/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loggingOut ? 'Signing out…' : 'Logout'}
+            </button>
           </div>
         </header>
 

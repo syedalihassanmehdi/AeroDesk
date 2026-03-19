@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
+import { getRequestSession } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!getRequestSession(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { data, error } = await getSupabaseAdmin()
     .from('leads')
     .select('*')
