@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { getSupabaseClient } from './supabase'
 
 export interface SiteConfig {
   // Branding
@@ -298,7 +298,7 @@ export const DEFAULT_CONFIG: SiteConfig = {
 
 export async function getSiteConfig(): Promise<SiteConfig> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('site_config')
       .select('*')
       .eq('id', 1)
@@ -316,4 +316,3 @@ export async function getSiteConfig(): Promise<SiteConfig> {
     return DEFAULT_CONFIG
   }
 }
-

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { getSiteConfig } from '@/lib/site-config'
 import BookingForm from '@/app/components/BookingForm'
 import Navbar from '@/app/components/Navbar'
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 async function getTourBySlug(slug: string) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
       .from('tours')
       .select('*')
       .eq('slug', slug)
@@ -218,4 +218,3 @@ export default async function TourDetailPage({ params }: { params: Promise<{ slu
     </div>
   )
 }
-

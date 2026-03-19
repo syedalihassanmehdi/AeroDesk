@@ -1,10 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { TourCard } from './TourCard'
 import type { SiteConfig } from '@/lib/site-config'
 
 async function getTours() {
   try {
-    const { data, error } = await supabase.from('tours').select('*').order('created_at', { ascending: false })
+    const { data, error } = await getSupabaseClient().from('tours').select('*').order('created_at', { ascending: false })
     if (error || !data) return []
     return data.map((t: any) => ({
       id: t.id, slug: t.slug, title: t.title, destination: t.destination, country: t.country,
@@ -63,4 +63,3 @@ export default async function ToursSection({ config }: { config: SiteConfig }) {
     </section>
   )
 }
-
